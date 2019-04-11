@@ -44,23 +44,23 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.min.js"></script> -->
+    <script src="../dist/autocomplete.js"></script>
     <script>
       var client = algoliasearch('latency', '6be0576ff61c053d5f9a3225e2a90f76');
-      var index = client.initIndex('contacts');
+      var index = client.initIndex('actors');
       autocomplete('#search-input', { hint: false }, [
         {
-          source: autocomplete.sources.hits(index, { hitsPerPage: 5 }),
+          source: autocomplete.sources.hits(index, { hitsPerPage: 5 }, true),
           displayKey: 'name',
           templates: {
             suggestion: function(suggestion) {
-              return suggestion._highlightResult.name.value;
+              return suggestion.__recentSearch ? "⏰" + suggestion._highlightResult.name.value : suggestion._highlightResult.name.value;
             }
           }
         }
       ]).on('autocomplete:selected', function(event, suggestion, dataset) {
-        console.log(suggestion, dataset);
-        alert('dataset: ' + dataset + ', ' + suggestion.name);
+        suggestion._saveAsRecent(suggestion.name, suggestion)
       });
     </script>
   </body>
